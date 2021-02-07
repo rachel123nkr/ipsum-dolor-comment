@@ -35,5 +35,11 @@ input[type=submit]:hover {
     border-style: solid;
     padding : 5px;
     margin : 10px;
-    weight : 50%
+    weight : 50%;
 }
+/*
+#comments{
+    visibility: hidden;
+
+}
+*/

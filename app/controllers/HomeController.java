@@ -1,5 +1,6 @@
 package controllers;
 
+import akka.http.javadsl.model.HttpRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import models.Comment;
 import org.checkerframework.checker.units.qual.C;
@@ -25,59 +26,44 @@ public class HomeController extends Controller implements WSBodyReadables, WSBod
         this.ws = ws;
     }
 
-    public Result index() {
-
-        List<Comment> comm_list =new ArrayList<Comment>();
-
-        return ok(views.html.index.render(comm_list));
-    }
+//    public Result index() {
+//
+//        List<Comment> comm_list =new ArrayList<Comment>();
+//
+//        return ok(views.html.comments_list.render(comm_list));
+//    }
 
 
     public Result get_comment(Http.Request request) {
-        WSRequest  request_comments =  ws.url("https://jsonplaceholder.typicode.com/comments?postId=1");
-        System.out.println(request_comments.getUrl());
-        CompletionStage<WSResponse> response_ = request_comments.get();
+//        Integer postId_int = Integer.parseInt(postId);
+//        WSRequest  request_comments =  ws.url("https://jsonplaceholder.typicode.com/comments?postId=1");
+//        System.out.println(request_comments.getUrl());
+//        CompletionStage<WSResponse> response_ = request_comments.get();
 
-        String url = "https://jsonplaceholder.typicode.com/comments?postId=1";
+        String[] postIds = request.queryString().get("postId");
+        System.out.println(postIds);
+        List<Comment> comm_list =new ArrayList<Comment>();
+        if(postIds == null || postIds.length<=0 ){
+            return ok(views.html.comments_list.render(comm_list));
+        }
+
+        try {
+            Integer postId = Integer.parseInt(postIds[0]);
+
+        String url = "https://jsonplaceholder.typicode.com/comments?postId="+postId;
         CompletionStage<JsonNode> jsonPromise = ws.url(url).get()
                 .thenApply(WSResponse::asJson);
 
-
-//        CompletionStage<Result> res = response_.thenApply(
-//                (WSResponse r) -> {
-////                    System.out.println(r.asJson().toPrettyString());
-//                    JsonNode response_json = r.asJson();
-//                    int status = r.getStatus();
-//                    if (status == 200){
-//
-//                        WSRequest  request_comments2 = (WSRequest) ws.url("http://localhost:8080/comments").setMethod("POST").setBody(response_json).execute();
-////                        request_comments2.post("");
-//                        return ok(response_json);
-//
-////                        return ok(views.html.list_comments.render("sssss"));
-//                    }
-//                    else {
-//                        return badRequest();
-//                    }
-//                });
         JsonNode json_of_comments;
-        try {
+//        try {
             json_of_comments = jsonPromise.toCompletableFuture().get();
-//            System.out.println(json_of_comments);
-
-
-//        Comment comment = new Comment(1, 1, "aaa", "aaa", "aaa");
-//        JsonNode commentJson = Json.toJson(comment);
-//        System.out.println(commentJson.toPrettyString());
-//            @(comment_list: List[Comment])
-
-            List<Comment> comm_list =new ArrayList<Comment>();
             for (JsonNode comm:json_of_comments) {
-//                System.out.println(comm.get("postId"));
-
                 comm_list.add(new Comment(comm.get("postId").asInt(), comm.get("id").asInt(), comm.get("name").asText(), comm.get("email").asText(), comm.get("body").asText()));
             }
-            return ok(views.html.index.render(comm_list));
+            return ok(views.html.comments_list.render(comm_list));
+        }
+        catch (NumberFormatException nfe){
+            return ok(views.html.comments_list.render(comm_list));
         }
         catch (Exception ex){
             return badRequest();

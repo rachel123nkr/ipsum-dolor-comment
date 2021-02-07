@@ -1,24 +1,13 @@
-@(comment_list: List[Comment] )
-
+@(content: Html)
 @main("ipsum dolor comment") {
-  <form action="/">
-    <label for="postID">Post ID:</label>
-    <input type="text" id="postID" name="postID">
+  <form action="/" method="get">
+    <label for="postId">Post ID:</label>
+    <input type="text" id="postId" name="postId">
     <input type="submit" value="Get Comments" id="serachBtn">
-    <br><br>
-    <label for="serachComm">Search Comment Body:</label>
-    <input type="text" id="serachComm" name="serachComm">
   </form>
-    @for(comment <- comment_list) {
-    <div class = "comment">
-      <p>
-        comment id: @comment.getId()
-      </p>
-      <p>
-        comment body:
-        <br>
-        @comment.getBody()
-      </p>
-    </div>
-    }
+  <label for="searchComm">Search Comment Body:</label>
+  <input type="text" id="searchComm" name="searchComm">
+  <div id = "comments">
+      @content
+  </div>
 }
