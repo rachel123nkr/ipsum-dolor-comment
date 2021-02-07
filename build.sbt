@@ -9,4 +9,9 @@ scalaVersion := "2.13.3"
 
 libraryDependencies += guice
 
+libraryDependencies ++= Seq(
+  javaWs
+)
+libraryDependencies += ws
+
 PlayKeys.devSettings += "play.server.http.port" -> "8080"

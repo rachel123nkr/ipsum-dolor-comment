@@ -12,7 +12,7 @@ input[type=submit]{
     background-color: #008CBA;
     color: white;
     border: 2px solid #008CBA;
-    padding: 16px 32px;
+    padding: 8px 16px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -20,10 +20,20 @@ input[type=submit]{
     margin: 4px 2px;
     transition-duration: 0.4s;
     cursor: pointer;
+    border-radius: 8px;
 }
 
 
 input[type=submit]:hover {
     background-color: white;
     color: black;
+}
+
+
+.comment{
+    border: 2px;
+    border-style: solid;
+    padding : 5px;
+    margin : 10px;
+    weight : 50%
 }
