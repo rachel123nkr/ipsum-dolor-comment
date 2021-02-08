@@ -5,15 +5,14 @@
         <p>
             comment id: @comment.getId()
         </p>
-        <p>
-            comment body:
-            <br>
+        comment body:
+        <p class = "comment_body">
             @comment.getBody()
         </p>
     </li>
 }
 
-@if(comment_list.isEmpty()){
+@if( comment_list ==null || comment_list.isEmpty()){
     <div>
         no comments
     </div>

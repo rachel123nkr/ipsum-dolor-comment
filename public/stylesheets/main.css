@@ -34,13 +34,13 @@ input[type=submit]:hover {
     border: 2px;
     border-style: solid;
     padding : 5px;
-    margin : 10px;
+    margin : 10px 10px 10px 10px;
     weight : 50%;
     list-style-type:none;
 }
-/*
+
 #comments{
-    visibility: hidden;
+    /*visibility: hidden;*/
+    padding :0px
 
 }
-*/

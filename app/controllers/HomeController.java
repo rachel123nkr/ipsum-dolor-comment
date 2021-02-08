@@ -10,16 +10,15 @@ import play.libs.ws.*;
 
 import javax.inject.Inject;
 import javax.validation.constraints.Null;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
+import utils.Util;
 
-/**
- * This controller contains an action to handle HTTP requests
- * to the application's home page.
- */
 public class HomeController extends Controller implements WSBodyReadables, WSBodyWritables{
     private final WSClient ws;
+
 
     @Inject
     public HomeController(WSClient ws) {
@@ -28,38 +27,27 @@ public class HomeController extends Controller implements WSBodyReadables, WSBod
 
 
     public Result index(Http.Request request) {
-//        Integer postId_int = Integer.parseInt(postId);
-//        WSRequest  request_comments =  ws.url("https://jsonplaceholder.typicode.com/comments?postId=1");
-//        System.out.println(request_comments.getUrl());
-//        CompletionStage<WSResponse> response_ = request_comments.get();
-
         String[] postIds = request.queryString().get("postId");
-        System.out.println(postIds);
-        List<Comment> comm_list =new ArrayList<>();
-        if(postIds == null || postIds.length<=0 ){
-            return ok(views.html.index.render(comm_list));
-        }
+        if(postIds == null || postIds.length<=0 )
+            return ok(views.html.index.render(null));
 
         try {
+            List<Comment> comm_list =new ArrayList<>();
             Integer postId = Integer.parseInt(postIds[0]);
-            String url = "https://jsonplaceholder.typicode.com/comments?postId="+postId;
-            CompletionStage<JsonNode> jsonPromise = ws.url(url).get()
-                    .thenApply(WSResponse::asJson);
-
-            JsonNode json_of_comments;
-            json_of_comments = jsonPromise.toCompletableFuture().get();
+            JsonNode json_of_comments = new Util(ws).getComments(postId);
             for (JsonNode comm : json_of_comments) {
                 comm_list.add(new Comment(comm));
             }
             return ok(views.html.index.render(comm_list));
         }
         catch (NumberFormatException nfe){
-            return ok(views.html.index.render(comm_list));
+            return ok(views.html.index.render(null));
         }
         catch (Exception ex){
-            return badRequest();
+            return badRequest(views.html.error.render(ex.getMessage()));
 
         }
     }
+
 }
 
