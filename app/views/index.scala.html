@@ -1,4 +1,4 @@
-@(content: Html)
+@(comment_list: List[Comment] )
 @main("ipsum dolor comment") {
   <form action="/" method="get">
     <label for="postId">Post ID:</label>
@@ -7,7 +7,7 @@
   </form>
   <label for="searchComm">Search Comment Body:</label>
   <input type="text" id="searchComm" name="searchComm">
-  <div id = "comments">
-      @content
-  </div>
+  <ul id = "comments">
+      @comments_list(comment_list)
+  </ul>
 }

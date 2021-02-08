@@ -1,8 +1,22 @@
 package models;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 public class Comment {
     private Integer postId;
     private Integer id;
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "postId=" + postId +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", body='" + body + '\'' +
+                '}';
+    }
+
     private String name;
     private String email;
     private String body;
@@ -11,6 +25,14 @@ public class Comment {
         this.postId = postId;
         this.id = id;
         this.body = body;
+    }
+
+    public Comment(JsonNode comm) {
+        this.postId = comm.get("postId").asInt();
+        this.id = comm.get("id").asInt();
+        this.name = comm.get("name").asText();
+        this.email = comm.get("email").asText();
+        this.body =  comm.get("body").asText();
     }
 
     public Comment(Integer postId, Integer id, String name, String email, String body) {

@@ -44,32 +44,63 @@ public class HomeController extends Controller implements WSBodyReadables, WSBod
         System.out.println(postIds);
         List<Comment> comm_list =new ArrayList<Comment>();
         if(postIds == null || postIds.length<=0 ){
-            return ok(views.html.comments_list.render(comm_list));
+            return ok(views.html.index.render(comm_list));
         }
 
         try {
-            Integer postId = Integer.parseInt(postIds[0]);
+        Integer postId = Integer.parseInt(postIds[0]);
+        System.out.println("aaaa");
 
         String url = "https://jsonplaceholder.typicode.com/comments?postId="+postId;
         CompletionStage<JsonNode> jsonPromise = ws.url(url).get()
                 .thenApply(WSResponse::asJson);
 
         JsonNode json_of_comments;
+            System.out.println("bbb");
+
 //        try {
             json_of_comments = jsonPromise.toCompletableFuture().get();
-            for (JsonNode comm:json_of_comments) {
-                comm_list.add(new Comment(comm.get("postId").asInt(), comm.get("id").asInt(), comm.get("name").asText(), comm.get("email").asText(), comm.get("body").asText()));
+            if (request.method() == "POST") {
+                System.out.println("ccc");
+
+                for (JsonNode comm : json_of_comments) {
+                    String comm_body = comm.get("body").asText();
+                    if (request.hasBody()) {
+                        System.out.println("ddd");
+
+                        boolean isFound = comm_body.indexOf(request.body().asFormUrlEncoded().get("search-body")[0]) != -1 ? true : false; //true
+                        System.out.println("ddd222");
+                        System.out.println(isFound);
+
+
+                        if (isFound) {
+                            System.out.println("ddd3333");
+                            comm_list.add(new Comment(comm));
+                        }
+                    }
+                }
+            }else{
+                System.out.println("eee");
+
+                for (JsonNode comm : json_of_comments) {
+                    comm_list.add(new Comment(comm));
+                }
             }
-            return ok(views.html.comments_list.render(comm_list));
+            System.out.println("end");
+            System.out.println(comm_list);
+
+            return ok(views.html.index.render(comm_list));
         }
         catch (NumberFormatException nfe){
-            return ok(views.html.comments_list.render(comm_list));
+            return ok(views.html.index.render(comm_list));
         }
         catch (Exception ex){
             return badRequest();
 
         }
     }
+
+
 
 }
 

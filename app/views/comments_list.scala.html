@@ -1,22 +1,25 @@
 @(comment_list: List[Comment] )
 
-@index{
-    @if(comment_list.isEmpty()){
-        <div>
-            no comments
-        </div>
-    }else{
-        @for(comment <- comment_list) {
-        <div class = "comment">
-            <p>
-                comment id: @comment.getId()
-            </p>
-            <p>
-                comment body:
-                <br>
-                @comment.getBody()
-            </p>
-        </div>
-        }
+@display(comment: Comment) = {
+    <li class = "comment">
+        <p>
+            comment id: @comment.getId()
+        </p>
+        <p>
+            comment body:
+            <br>
+            @comment.getBody()
+        </p>
+    </li>
+}
+
+@if(comment_list.isEmpty()){
+    <div>
+        no comments
+    </div>
+}else{
+    @for(comment <- comment_list) {
+        @display(comment)
     }
 }
+
