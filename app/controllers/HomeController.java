@@ -1,13 +1,7 @@
 package controllers;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import models.Comment;
 import play.mvc.*;
 import play.libs.ws.*;
-
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -30,15 +24,11 @@ public class HomeController extends Controller implements WSBodyReadables, WSBod
             return CompletableFuture.supplyAsync(() -> ok(views.html.index.render(null)));
 
         try {
-            List<Comment> comm_list =new ArrayList<>();
             Integer postId = Integer.parseInt(postIds[0]);
-            return cws.getComments(postId).thenApplyAsync(res -> {
-                if (res == null)
+            return cws.getComments(postId).thenApplyAsync(commentList -> {
+                if (commentList == null)
                     return ok(views.html.error.render("Data Access Error"));
-                for (JsonNode comm : res) {
-                    comm_list.add(new Comment(comm));
-                }
-                return ok(views.html.index.render(comm_list));
+                return ok(views.html.index.render(commentList));
             });
         }
         catch (NumberFormatException nfe){
