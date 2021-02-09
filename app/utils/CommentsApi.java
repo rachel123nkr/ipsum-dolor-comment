@@ -6,11 +6,11 @@ import play.libs.ws.*;
 import javax.inject.Inject;
 import java.util.concurrent.CompletionStage;
 
-public class Util implements WSBodyReadables, WSBodyWritables {
+public class CommentsApi implements WSBodyReadables, WSBodyWritables {
     private final WSClient ws;
 
     @Inject
-    public Util(WSClient ws) {
+    public CommentsApi(WSClient ws) {
         this.ws = ws;
     }
 

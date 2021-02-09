@@ -1,28 +1,23 @@
 package controllers;
 
-import akka.http.javadsl.model.HttpRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import models.Comment;
-import org.checkerframework.checker.units.qual.C;
-import play.libs.Json;
 import play.mvc.*;
 import play.libs.ws.*;
 
 import javax.inject.Inject;
-import javax.validation.constraints.Null;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletionStage;
-import utils.Util;
+
+import utils.CommentsApi;
 
 public class HomeController extends Controller implements WSBodyReadables, WSBodyWritables{
-    private final WSClient ws;
+    private final CommentsApi cws;
 
 
     @Inject
-    public HomeController(WSClient ws) {
-        this.ws = ws;
+    public HomeController(CommentsApi cws) {
+        this.cws = cws;
     }
 
 
@@ -34,7 +29,7 @@ public class HomeController extends Controller implements WSBodyReadables, WSBod
         try {
             List<Comment> comm_list =new ArrayList<>();
             Integer postId = Integer.parseInt(postIds[0]);
-            JsonNode json_of_comments = new Util(ws).getComments(postId);
+            JsonNode json_of_comments = cws.getComments(postId);
             for (JsonNode comm : json_of_comments) {
                 comm_list.add(new Comment(comm));
             }
