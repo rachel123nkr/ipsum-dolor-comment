@@ -8,6 +8,10 @@ import play.libs.ws.*;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+
 
 import utils.CommentsApi;
 
@@ -21,25 +25,28 @@ public class HomeController extends Controller implements WSBodyReadables, WSBod
     }
 
 
-    public Result index(Http.Request request) {
+    public CompletionStage<Result> index(Http.Request request) {
         String[] postIds = request.queryString().get("postId");
         if(postIds == null || postIds.length<=0 )
-            return ok(views.html.index.render(null));
+            return CompletableFuture.supplyAsync(() -> ok(views.html.index.render(null)));
 
         try {
             List<Comment> comm_list =new ArrayList<>();
             Integer postId = Integer.parseInt(postIds[0]);
-            JsonNode json_of_comments = cws.getComments(postId);
-            for (JsonNode comm : json_of_comments) {
-                comm_list.add(new Comment(comm));
-            }
-            return ok(views.html.index.render(comm_list));
+            return cws.getComments(postId).thenApplyAsync(res -> {
+                if (res == null)
+                    return ok(views.html.error.render("Data Access Error"));
+                for (JsonNode comm : res) {
+                    comm_list.add(new Comment(comm));
+                }
+                return ok(views.html.index.render(comm_list));
+            });
         }
         catch (NumberFormatException nfe){
-            return ok(views.html.index.render(null));
+            return CompletableFuture.supplyAsync(() ->ok(views.html.index.render(null)));
         }
         catch (Exception ex){
-            return badRequest(views.html.error.render(ex.getMessage()));
+            return CompletableFuture.supplyAsync(() ->badRequest(views.html.error.render(ex.getMessage())));
 
         }
     }
